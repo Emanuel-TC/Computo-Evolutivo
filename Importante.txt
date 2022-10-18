@@ -1,0 +1,2 @@
+Hola, este repositorio tiene la finalidad de compartir el desarrollo de un proyecto sobre cómputo evoutivo.
+Se desarrolla la base del código conforme al algoritmo proporcionado.
