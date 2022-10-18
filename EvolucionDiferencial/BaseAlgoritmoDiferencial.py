@@ -10,7 +10,7 @@ from numpy import around
 # definimos la función objetivo
 def funcionObjetivo(x):
   #return 0
-  return x[0]**2.0 + x[1]**2.0
+  return x[0]**3.0 + x[1]**2.0
 
 
 # definimos la operación de mutación
@@ -29,7 +29,7 @@ def revisarLimites(vectores_mutados, limites):
 ##################CON LIMITES########################################################################
 
 # definimos la operación de cruza
-def cruza(vectoresMutados, target, cr, nVariablesDeEntrada): #cr es 0<= cr <= 1
+def cruza(vectoresMutados, target, nVariablesDeEntrada,cr): #cr es 0<= cr <= 1
     # generamos un valor aleatorio uniforme para variable de entrada
     p = rand(nVariablesDeEntrada)
     # generamos vector de target por cruza binomial
@@ -80,7 +80,7 @@ def evolucion_diferencial(tamanio_de_poblacion, limites, iter, F, cr):
                 
         #encontrar el vector de mejor rendimiento en cada iteración
         mejor_obj = min(solucionesCandidatas)
-        # store the lowest objective function value
+        # almacena el valor más chico de la función objetivo
         if mejor_obj < anterior_obj:
             mejor_vector = poblacion[argmin(solucionesCandidatas)]
             anterior_obj = mejor_obj
@@ -90,17 +90,19 @@ def evolucion_diferencial(tamanio_de_poblacion, limites, iter, F, cr):
 
 ###########################################Evolucion Diferencial##############################################
 
-# define population size
-tamanio_de_poblacion = 10
-# define lower and upper bounds for every dimension
+# Definimos tamaño de la poblacion
+tamanio_de_poblacion = 100
+#Definimos límites inferior y superior para cada dimensión
 limites = asarray([(-5.0, 5.0), (-5.0, 5.0)])
-# define number of iterations
-iter = 100
-# define scale factor for mutation
+#definimos el número de iteraciones
+iter = 1000
+#definimos el factor de escala de mutación
+#normalnte F es 0<F>2
 F = 0.5
-# define crossover rate for recombination
+
+#definimos la tasa de cruce para la recombinación
 cr = 0.7
 
-# perform differential evolution
+#Buscamos una solucion de la funcion objetivo con evolucion diferencial
 solucion = evolucion_diferencial(tamanio_de_poblacion, limites, iter, F, cr)
 print('\nLa solucion de optimizar funcion es: f([%s]) = %.5f' % (around(solucion[0], decimals=5), solucion[1]))
