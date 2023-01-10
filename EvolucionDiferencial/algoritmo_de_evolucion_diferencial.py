@@ -3,8 +3,8 @@ import numpy as np
 from numpy import *
 import random
 # definimos la función objetivo.
-def funcion_objetivo(vector):
-    resultado = (3 * vector[0] + (0.000001 * vector[0]) ** 3.0) + (2 * vector[1]) + ((0.000002 / 3) * vector[1] ** 3.0)
+def funcion_objetivo(x):
+    resultado = 3 * x[0] + 0.000001 * x[0] ** 3 + 2 * x[1] + (0.000002 / 3) * x[1] ** 3
     return resultado
 def restricciones(vector):
     g1 = max(0, -vector[3] + vector[2] - 0.55)
@@ -103,7 +103,6 @@ def evolucion_diferencial(tamanio_de_poblacion, limites, iteraciones, F, cr):
             else:
                 if (vector_trial[5] == 0) and (vector_target[5] != 0):
                     poblacion[j] = vector_trial
-    
     best = poblacion[0]
     for i in poblacion:
         if i[-2] < best[-2]:
@@ -111,10 +110,12 @@ def evolucion_diferencial(tamanio_de_poblacion, limites, iteraciones, F, cr):
 
     return best
 
-tamanio_de_poblacion = 20
+
+
+tamanio_de_poblacion = 30
 numero_de_iteraciones = 1000
-F = 0.9
-cr = 0.5
+F = 0.8
+cr = 0.7
 limites = np.array([[0.0, 1200.0], [0.0, 1200.0], [-0.55, 0.55], [-0.55, 0.55]])
 solucion = evolucion_diferencial(tamanio_de_poblacion,limites,numero_de_iteraciones,F, cr)
-print(f"El vector solucion es {solucion[0:4]} y su valor de aptitud es{solucion[4]}")
+print(f"El vector solucion es {solucion[0:4]} y su valor de aptitud es {solucion[4]}")
