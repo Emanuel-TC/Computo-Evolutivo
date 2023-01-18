@@ -32,7 +32,7 @@ sus funciones.
 ## Documentación
 
 El problema a resolver es el siguiente:
-![problema_g05](https://github.com/Emanuel-TC/Computo-Evolutivo/blob/main/EvolucionDiferencial/Ejercicio5.jpeg?raw=true)
+![problema_g05](https://github.com/Emanuel-TC/Computo-Evolutivo/blob/main/EvolucionDiferencial/images/Ejercicio5.jpeg?raw=true)
 ## Descripción del desarrollo en python
 El algoritmo comienza iniciando aleatoriamente una población de vectores de 
 decisión de valor real, también conocidos como genomas o cromosomas. 
@@ -212,14 +212,67 @@ Después, obtenemos el mejor vector que se ha generado con el algoritmo de la si
 
     return mejor_vector
 ```
- Finalmente tenemos el desarrollo de todo el algoritmo en el siguiente apartado:
 
+Se ha implementado una gráfica para mostrar la evolución del resultado esperado.
+Esto con la libreria pyplot, la cual importamos de la siguiente forma:
 
 ```python
-#Autor: Emanuel Rodríguez
+from matplotlib import pyplot
+```
+Luego, en nuestra función de ED, después de crear la población inicial, definimos el arreglo:
+
+```python
+    grafica = []
+```
+Y en nuestra *selección* la añadimos, de tal forma, que el valor que se esté graficando sea el valor de aptitud del vector seleccionado:
+
+```python
+            # procedemos a realizar la seleccion
+            if (vector_trial[-1] == 0) and (vector_target[-1] == 0): #si dos soluciones son factibles
+                if vector_trial[-2] < vector_target[-2]: #se toma aquella con el valor aptitud deseado, en este caso, el menor
+                    poblacion[j] = vector_trial
+                    grafica.append(vector_trial[-2])
+            elif (vector_trial[-1] != 0) and (vector_target[-1] != 0): #si dos soluciones no son factibles
+                if vector_trial[-1] < vector_target[-1]: #se toma aquella con menor suma de violación de restricciones
+                    poblacion[j] = vector_trial
+                    grafica.append(vector_trial[-2])
+            else:
+                if (vector_trial[-1] == 0) and (vector_target[-1] != 0): #si una solucion es factible y la otra no
+                    poblacion[j] = vector_trial #se toma la solución factible
+                    grafica.append(vector_trial[-2])
+```
+Y después de escoger al mejor vector, ilustramos el resultado con el siguiente código:
+
+```python
+    pyplot.plot(grafica, '.-')
+    pyplot.xlabel('Evolución de solución')
+    pyplot.ylabel('Evaluación de f(x)')
+    pyplot.show()
+```
+Para una población de 20 individuos y 100 iteraciones, la gráfica obtenida es la siguiente:
+![20_individuos_100_iteraciones](https://github.com/Emanuel-TC/Computo-Evolutivo/blob/main/EvolucionDiferencial/images/20_individuos_100_iteraciones.png?raw=true)
+Podemos observar cómo en un inicio el valor de aptitud de los vectores generados tiende a subir y bajar drásticamente,  sin embargo, a medida que el
+algoritmo está evolucionando, los resultados se estabilizan, pero siguien moviéndose con niveles altos y bajos pero ya en un rango más acotado.
+
+Para una poblacion de 30 individuos y 1000 iteraciones, el resultado es el siguiente:
+![30_individuos_1000_iteraciones](https://github.com/Emanuel-TC/Computo-Evolutivo/blob/main/EvolucionDiferencial/images/30_individuos_1000_iteraciones.png?raw=true)
+Observamos que, como en la gráfica anterior, los valores posteriores a las evaluaciones 300 se estabilizan y comienzan a tender al mismo valor.
+
+Y cómo última evaluación de la gráfica, ahora lo hacemos con una poblacion de 50 individuos y 10000 iteraciones, el resultado es bastante similar al anterior, sólo para corroborar que,
+los valores obtenidos ya se mantienen en el esperado:
+![50_individuos_10000_iteraciones](https://github.com/Emanuel-TC/Computo-Evolutivo/blob/main/EvolucionDiferencial/images/50_individuos_10000_iteraciones.png?raw=true)
+
+El cuál está desplegado en la siguiente imagen:
+![resultado_esperado](https://github.com/Emanuel-TC/Computo-Evolutivo/blob/main/EvolucionDiferencial/images/Resltado_esperado.png?raw=true)
+Este resultado es el declarado en la primer imagen como la mejor solución encontrada para el problema.
+
+Finalmente tenemos el desarrollo de todo el algoritmo en el siguiente apartado:
+
+```python
 import numpy as np
 from numpy import *
 import random
+from matplotlib import pyplot
 # definimos la función objetivo.
 def funcion_objetivo(x):
     resultado = 3 * x[0] + 0.000001 * x[0] ** 3 + 2 * x[1] + (0.000002 / 3) * x[1] ** 3
@@ -232,7 +285,7 @@ def restricciones(vector):
     h5 = max(0, 1000 * math.sin(vector[3] - 0.25) + 1000 * math.sin(vector[3] - vector[2] - 0.25) + 1294.8)
     return g1 + g2 + h3 + h4 +h5
 def genera_poblacion(tamanio_de_poblacion, limites):
-    poblacion = []  # creamos un arreglo vació llamado poblacion
+    poblacion = []  # creamos un arreglo vacio llamado poblacion
     for i in range(0,tamanio_de_poblacion):  # definimos el número de vectores a crear, en este caso, siempre lo define el tamanio de la poblacion
         vector = []
         for j in range(len(limites)):  # definimos el número de columnas o bien, dimension del vector
@@ -266,75 +319,72 @@ def cruza(vector_target, vector_mutado,cr):
         # o igual al valor de la tasa de cruza
         if cruza <= cr:
             vector_trial.append(vector_mutado[k])
-
         # si no es así, entonces no se hace la cruza
         else:
             vector_trial.append(vector_target[k])
     return vector_trial
 
 def evolucion_diferencial(tamanio_de_poblacion, limites, iteraciones, F, cr):
-    # lo primero que se debe hacer es crear una población con valores aleatorios:
-    # lo podemos hacer con el siguiente código:
+    # inicializar población
     poblacion = genera_poblacion(tamanio_de_poblacion, limites)
-
+    grafica = []
     #Evaluamos cada individuo de la poblacion
     for index, vector in enumerate(poblacion):
         poblacion[index].append(funcion_objetivo(vector))
         poblacion[index].append(restricciones(vector))
-        #print(vector)
+
     # ejecutar iteraciones del algoritmo
     i = 0
-    vectores_candidatos = []
     while i in range(iteraciones):
         i += 1
         # iterar sobre todas las soluciones candidatas
         for j in range(tamanio_de_poblacion):
             # elegir tres candidatos, a, b y c, que no sean el actual
-            #vectores_candidatos = [vector for vector in range(tamanio_de_poblacion) if vector != j]
-
             vector_1, vector_2, vector_3 = random.choices(poblacion, k=3)
-            #print(vector_1)
+
             # realizar mutación
             vector_mutado = mutacion(vector_1[0:4],vector_2[0:4],vector_3[0:4],F)
-            #print(f"El vector mutado {j}: {vector_mutado}")
-            #Corroboramos que los limites estén dentro de los rangos establecidos
-            #de los contrario se le aplica una modificación para controlar los limites
             vector_mutado = ajusta_limites(vector_mutado, limites)
-            #print(f"El vector mutado corregido {j} es {vector_mutado}")
+
             # Procedemos a realizar la cruza
             vector_target = poblacion[j]
-            #print(f"El vector target es: {vector_target}")
             vector_trial = cruza(vector_target[0:4], vector_mutado, cr)
-            #print(f"El vector trial al realizar la cruza es: {vector_trial}")
+
+            #Evaluamos el nuevo vector, el vector trial
             vector_trial.append(funcion_objetivo(vector_trial))
             vector_trial.append(restricciones(vector_trial))
-            #print(f"El resultado de evaluar el vector trial es: {vector_trial}")
 
             # procedemos a realizar la seleccion
-
-            if (vector_trial[5] == 0) and (vector_target[5] == 0): #si las restricciones de trial son iguales a 0 y las restricciones del vector target son iguales a0
-                if vector_trial[4] < vector_target[4]: #si el valor de aptitud de trial es menor al de target
-                    poblacion[j] = vector_trial #añade a la poblacion el vector trial
-            elif (vector_trial[5] != 0) and (vector_target[5] != 0): #si dos soluciones no son factibles
-                if vector_trial[5] < vector_target[5]:
+            if (vector_trial[-1] == 0) and (vector_target[-1] == 0): #si dos soluciones son factibles
+                if vector_trial[-2] < vector_target[-2]: #se toma aquella con el valor aptitud deseado, en este caso, el menor
                     poblacion[j] = vector_trial
+                    grafica.append(vector_trial[-2])
+            elif (vector_trial[-1] != 0) and (vector_target[-1] != 0): #si dos soluciones no son factibles
+                if vector_trial[-1] < vector_target[-1]: #se toma aquella con menor suma de violación de restricciones
+                    poblacion[j] = vector_trial
+                    grafica.append(vector_trial[-2])
             else:
-                if (vector_trial[5] == 0) and (vector_target[5] != 0):
-                    poblacion[j] = vector_trial
-    best = poblacion[0]
-    for i in poblacion:
-        if i[-2] < best[-2]:
-            best = i
+                if (vector_trial[-1] == 0) and (vector_target[-1] != 0): #si una solucion es factible y la otra no
+                    poblacion[j] = vector_trial #se toma la solución factible
+                    grafica.append(vector_trial[-2])
+    #se busca la mejor solución en la población mejorada
+    mejor_vector = poblacion[0]
+    for vector in poblacion:
+        if vector[-2] < mejor_vector[-2]: #si el valor de aptitud del vector actual es menor al valor de aptitud del mejor vector
+            mejor_vector = vector #mi mejor vector es el vector actual
 
-    return best
+    pyplot.plot(grafica, '.-')
+    pyplot.xlabel('Evolución de solución')
+    pyplot.ylabel('Evaluación de f(x)')
+    pyplot.show()
+    return mejor_vector
 
-
-
-tamanio_de_poblacion = 30
-numero_de_iteraciones = 1000
-F = 0.8
-cr = 0.7
+tamanio_de_poblacion = 50
+numero_de_iteraciones = 10000
+F = 0.9
+cr = 0.9
 limites = np.array([[0.0, 1200.0], [0.0, 1200.0], [-0.55, 0.55], [-0.55, 0.55]])
 solucion = evolucion_diferencial(tamanio_de_poblacion,limites,numero_de_iteraciones,F, cr)
 print(f"El vector solucion es {solucion[0:4]} y su valor de aptitud es {solucion[4]}")
+
 ```
