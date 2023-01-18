@@ -1,0 +1,1 @@
+En esta carpeta van todas las imágenes que se enlazan al archivo README.md
