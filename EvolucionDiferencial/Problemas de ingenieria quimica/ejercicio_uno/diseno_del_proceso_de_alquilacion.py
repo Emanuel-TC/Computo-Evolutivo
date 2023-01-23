@@ -1,18 +1,67 @@
 import numpy as np
 from numpy import *
 import random
+import math
 from matplotlib import pyplot
 # definimos la función objetivo.
 def funcion_objetivo(x):
-    resultado = 3 * x[0] + 0.000001 * x[0] ** 3 + 2 * x[1] + (0.000002 / 3) * x[1] ** 3
+    c1 = 1.715
+    c2 = 0.035
+    c3 = 4.05665
+    c4 = 10.000
+    c5 = 3000.0
+    c6 = 0.063
+    resultado = c1*x[0] + c2*x[0]*x[5] + c3*x[2] + c4*x[1] + c5 - c6*x[2]*x[4]
     return resultado
-def restricciones(vector):
-    g1 = max(0, -vector[3] + vector[2] - 0.55)
-    g2 = max(0, -vector[2] + vector[3] - 0.55)
-    h3 = max(0, 1000 * math.sin(-vector[2] - 0.25) + 1000 * math.sin(-vector[3] - 0.25) + 894.8 - vector[0])
-    h4 = max(0, 1000 * math.sin(vector[2] - 0.25) + 1000 * math.sin(vector[2] - vector[3] - 0.25) + 894.8 - vector[1])
-    h5 = max(0, 1000 * math.sin(vector[3] - 0.25) + 1000 * math.sin(vector[3] - vector[2] - 0.25) + 1294.8)
-    return g1 + g2 + h3 + h4 +h5
+def restricciones(x):
+    c7 = 0.59553571 * (math.e -2)
+    c8 = 0.88392857
+    #0.13035330
+    c9 = 1.10880000                 #c10
+    c10 = 0.13035330                #c11
+    c11 = 0.00660330  #c12
+    c12 = 0.66173269 * (math.e -3)   #c13
+    c13 = 0.17239878 * (math.e -1)   #c14
+    c14 = 0.56595559 * (math.e -2)   #c15
+    c15 = 0.19120592 * (math.e -1)   #c16
+    c16 = 0.56850750 * (math.e +2)                 #c17
+    c17 = 1.08702000                 #c18
+    c18 = 0.32175000                 #c19
+    c19 = 0.3762000                 #c20
+    c20 = 0.00619800   #c21
+    c21 = 0.24623121 * (math.e +4)   #c22
+    c22 = 0.25125634 * (math.e +2)                    #c23
+    c23 = 5000.0    #c24
+    #c24
+    c24 = 0.48951000 * (math.e +6)   #c25
+    c25 = 0.44333333 * (math.e +2)                 #c26
+    c26 = 0.33000000                 #c27
+    c27 = 0.02255600                 #c28
+    c28 = 0.00759500                #c29
+    c29 = 0.00061000                     #c30
+    c30 = 0.0005                  #c31
+    c31 = 0.81967200                 #c32
+    c32 = 0.81967200                  #c33
+    c33 = 245000.0                       #c34
+    c34 = 250.0   #c35
+    c35 = 0.10204082 * (math.e- 1)   #c36
+    c36 = 0.12244898 * (math.e- 4)                 #c37
+    c37 = 0.00006250                 #c38
+    c38 = 0.00007625
+    r1 = max(0,c7 * (x[5]**2) + c8 * (x[0]**-1) * (x[2]) - c9 * (x[5]) -1)
+    r2 = max(0,c10 * x[0] * (x[2]**-1) + c11 * x[0] * (x[2]**-1) + c12 * x[0] * (x[2]**-1) * (x[5]**2) -1)
+    r3 = max(0,c13 * (x[5]**2) + c14 * x[4] - c15 * x[3] - c16 * x[5] -1)
+    r4 = max(0,c17 * (x[4]**-1) + c18 * (x[4]**-1) * x[5] + c19 * x[3] * (x[4]**-1) - c20 * (x[4]**-1) * (x[5]**2) -1)
+    r5 = max(0,c21 * x[6] + c22 * x[1] * (x[2]**-1) * (x[3]**-1) - c23 * x[1] * (x[2]**-1) -1)
+    r6 = max(0,c24 * (x[6]**-1) + c25 * x[1] * (x[2]**-1) * (x[6]**-1) - c26 * x[1] * (x[2]**-1) * (x[3]**-1) * (x[6]**-1) -1)
+    r7 = max(0,c27 * (x[4]**-1) + c28 * (x[4]**-1) * x[6] -1)
+    r8 = max(0,c29 * x[4] - c30 * x[6] -1)
+    r9 = max(0,c31 * x[2] - c32 * x[0] -1)
+    r10 = max(0,c33 * x[0] * (x[2]**-1) + c34 * (x[2]**-1) -1)
+    r11 = max(0,c35 * x[1] * (x[2]**-1) * (x[3]**-1) - c36 * x[1] * (x[2]**-1)  -1)
+    r12 = max(0,c37 * x[3] + c38 * (x[1]**-1) * x[2] * x[3] -1)
+
+    return r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8 + r9 + r10 + r11 + r12
 def genera_poblacion(tamanio_de_poblacion, limites):
     poblacion = []  # creamos un arreglo vacio llamado poblacion
     for i in range(0,tamanio_de_poblacion):  # definimos el número de vectores a crear, en este caso, siempre lo define el tamanio de la poblacion
@@ -72,12 +121,12 @@ def evolucion_diferencial(tamanio_de_poblacion, limites, iteraciones, F, cr):
             vector_1, vector_2, vector_3 = random.choices(poblacion, k=3)
 
             # realizar mutación
-            vector_mutado = mutacion(vector_1[0:4],vector_2[0:4],vector_3[0:4],F)
+            vector_mutado = mutacion(vector_1[0:-2],vector_2[0:-2],vector_3[0:-2],F)
             vector_mutado = ajusta_limites(vector_mutado, limites)
 
             # Procedemos a realizar la cruza
             vector_target = poblacion[j]
-            vector_trial = cruza(vector_target[0:4], vector_mutado, cr)
+            vector_trial = cruza(vector_target[0:-2], vector_mutado, cr)
 
             #Evaluamos el nuevo vector, el vector trial
             vector_trial.append(funcion_objetivo(vector_trial))
@@ -108,10 +157,10 @@ def evolucion_diferencial(tamanio_de_poblacion, limites, iteraciones, F, cr):
     pyplot.show()
     return mejor_vector
 
-tamanio_de_poblacion = 50
-numero_de_iteraciones = 10000
-F = 0.9
-cr = 0.9
-limites = np.array([[0.0, 1200.0], [0.0, 1200.0], [-0.55, 0.55], [-0.55, 0.55]])
+tamanio_de_poblacion = 20
+numero_de_iteraciones = 5000
+F = 0.6
+cr = 0.7
+limites = np.array([[1500.0, 2000.0], [1.0, 120.0], [3000.0, 3500.0], [85.0, 93.0], [90.0, 95.0], [3.0, 12.0], [145.0, 162.0]])
 solucion = evolucion_diferencial(tamanio_de_poblacion,limites,numero_de_iteraciones,F, cr)
-print(f"El vector solucion es {solucion[0:4]} y su valor de aptitud es {solucion[4]}")
+print(f"El vector solucion es {solucion[0:-2]} y su valor de aptitud es {solucion[-2]}")
