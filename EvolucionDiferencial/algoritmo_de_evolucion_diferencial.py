@@ -115,4 +115,4 @@ F = 0.9
 cr = 0.9
 limites = np.array([[0.0, 1200.0], [0.0, 1200.0], [-0.55, 0.55], [-0.55, 0.55]])
 solucion = evolucion_diferencial(tamanio_de_poblacion,limites,numero_de_iteraciones,F, cr)
-print(f"El vector solucion es {solucion[0:4]} y su valor de aptitud es {solucion[4]}")
+print(f"El vector solucion es {solucion[0:-2]} y su valor de aptitud es {solucion[-2]}")
