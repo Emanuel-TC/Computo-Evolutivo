@@ -3,17 +3,23 @@ import numpy as np
 from numpy import *
 import random
 from matplotlib import pyplot
-# definimos la función objetivo.
+# definimos la función objetivo
+
+
 def funcion_objetivo(x):
     resultado = 3 * x[0] + 0.000001 * x[0] ** 3 + 2 * x[1] + (0.000002 / 3) * x[1] ** 3
     return resultado
+
+
 def restricciones(vector):
     g1 = max(0, -vector[3] + vector[2] - 0.55)
     g2 = max(0, -vector[2] + vector[3] - 0.55)
     h3 = max(0, 1000 * math.sin(-vector[2] - 0.25) + 1000 * math.sin(-vector[3] - 0.25) + 894.8 - vector[0])
     h4 = max(0, 1000 * math.sin(vector[2] - 0.25) + 1000 * math.sin(vector[2] - vector[3] - 0.25) + 894.8 - vector[1])
     h5 = max(0, 1000 * math.sin(vector[3] - 0.25) + 1000 * math.sin(vector[3] - vector[2] - 0.25) + 1294.8)
-    return g1 + g2 + h3 + h4 +h5
+    return g1 + g2 + h3 + h4 + h5
+
+
 def genera_poblacion(tamanio_de_poblacion, limites):
     poblacion = []  # creamos un arreglo vacio llamado poblacion
     for i in range(0,tamanio_de_poblacion):  # definimos el número de vectores a crear, en este caso, siempre lo define el tamanio de la poblacion
@@ -22,6 +28,8 @@ def genera_poblacion(tamanio_de_poblacion, limites):
             vector.append(random.uniform(limites[j][0], limites[j][1]))  # lo llenamos con un valor flotante entre el limite inferior y el limite superior, iterando en cada índice de los limites designados
         poblacion.append(vector)  # y lo añadimos al arreglo
     return poblacion
+
+
 def ajusta_limites(vector_mutado,limites):
     for i in range(len(vector_mutado)):
         while vector_mutado[i] < limites[i][0] or vector_mutado[i] > limites[i][1]:
@@ -33,6 +41,8 @@ def ajusta_limites(vector_mutado,limites):
             if vector_mutado[i] > limites[i][1]:
                 vector_mutado[i] = limites[i][1] * 2 - vector_mutado[i]
     return vector_mutado
+
+
 def mutacion(vector_uno, vector_dos, vector_tres,F):
     # El proceso de mutación lo realizamos por partes:
     # primero la resta de x2-x3
@@ -54,11 +64,12 @@ def cruza(vector_target, vector_mutado,cr):
             vector_trial.append(vector_target[k])
     return vector_trial
 
+
 def evolucion_diferencial(tamanio_de_poblacion, limites, iteraciones, F, cr):
     # inicializar población
     poblacion = genera_poblacion(tamanio_de_poblacion, limites)
     grafica = []
-    #Evaluamos cada individuo de la poblacion
+    # #Evaluamos cada individuo de la poblacion
     for index, vector in enumerate(poblacion):
         poblacion[index].append(funcion_objetivo(vector))
         poblacion[index].append(restricciones(vector))
@@ -73,14 +84,14 @@ def evolucion_diferencial(tamanio_de_poblacion, limites, iteraciones, F, cr):
             vector_1, vector_2, vector_3 = random.choices(poblacion, k=3)
 
             # realizar mutación
-            vector_mutado = mutacion(vector_1[0:4],vector_2[0:4],vector_3[0:4],F)
+            vector_mutado = mutacion(vector_1[0:-2],vector_2[0:-2],vector_3[0:-2],F)
             vector_mutado = ajusta_limites(vector_mutado, limites)
 
             # Procedemos a realizar la cruza
             vector_target = poblacion[j]
-            vector_trial = cruza(vector_target[0:4], vector_mutado, cr)
+            vector_trial = cruza(vector_target[0:-2], vector_mutado, cr)
 
-            #Evaluamos el nuevo vector, el vector trial
+            # #Evaluamos el nuevo vector, el vector trial
             vector_trial.append(funcion_objetivo(vector_trial))
             vector_trial.append(restricciones(vector_trial))
 
